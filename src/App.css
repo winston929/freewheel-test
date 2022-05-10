@@ -1,5 +1,5 @@
-.table-head {
-  font-weight: 900;
+.menu-buttons {
+  margin-right: 10px;
 }
 
 .night-tube {
@@ -10,4 +10,8 @@
 
 .bad-service {
   color:rgb(255, 0, 0);
+}
+
+#search-box {
+  margin-top: 10px;
 }

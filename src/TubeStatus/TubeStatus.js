@@ -1,46 +1,56 @@
 import { useState, useEffect } from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Table } from 'react-bootstrap';
 
 const TubeStatus = () => {
-  const [fetchData, setfetchData] = useState([]);
+  const [fetchData, setFetchData] = useState([]);
+
   useEffect(() => {
-      fetch('https://api.tfl.gov.uk/Line/Mode/tube,overground,dlr/Status?detail=true')
-          .then(res => res.json())
-          .then(setfetchData);
+    fetch('https://api.tfl.gov.uk/Line/Mode/tube,overground,dlr/Status?detail=true')
+      .then(res => res.json())
+      .then(data => setFetchData(sortData(data)))
+      .catch(console.error);
   }, []);
 
   const hasNightTube = (serviceTypes) => {
     return serviceTypes && serviceTypes.some((service) => service.name === 'Night');
   };
 
-  console.info(fetchData);
+  const sortData = (dataList) => {
+    return dataList.sort((a, b) => {
+      if (a.modeName > b.modeName) { return 1; }
+      if (a.modeName < b.modeName) { return -1; }
+      if (a.name > b.name) { return 1; }
+      if (a.name < b.name) { return -1; }
+      return 0;
+    });
+  };
 
   return (
     <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Line</TableCell>
-          <TableCell>Service Status</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        { fetchData.map((data) => (
-          <TableRow>
-            <TableCell>
-              { data.name }
-              { hasNightTube(data.serviceTypes) && 
-                <img className="night-tube" src="./moon.png" alt="Night Tube Service" /> }
-            </TableCell>
-            <TableCell>
-              { data.lineStatuses.map((status) => 
-                (<div className={ status.statusSeverity !== 10 ? 'bad-service' : ''}>
-                  { status.statusSeverityDescription }
-                </div>)
+      <thead>
+        <tr>
+          <th>Line</th>
+          <th>Service Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {fetchData.map((data) => (
+          <tr key={data.name}>
+            <td>
+              {data.name}
+              {hasNightTube(data.serviceTypes) &&
+                <img className="night-tube" src="./moon.png" alt="Night Tube Service" />}
+            </td>
+            <td>
+              {data.lineStatuses.map((status) =>
+              (<div className={status.statusSeverity !== 10 ? 'bad-service' : ''}>
+                {status.statusSeverityDescription}
+              </div>)
               )}
-            </TableCell>
-          </TableRow>
-        )) }
-      </TableBody>
+            </td>
+          </tr>
+        ))}
+      </tbody>
     </Table>
   );
 }
