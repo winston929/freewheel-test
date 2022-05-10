@@ -5,21 +5,28 @@ const TubeStatus = () => {
   const [keyword, setKeyword] = useState('');
   const [fetchData, setFetchData] = useState([]);
   useEffect(() => {
+    const keywordStorage = localStorage && localStorage.getItem('keyword');
+    if (keywordStorage) setKeyword(keywordStorage);
     if (!keyword.length) return;
 
-    fetch(`https://api.tfl.gov.uk/BikePoint/Search?query=${keyword}`)
+    fetch(`https://api.tfl.gov.uk/BikePoint/Search?query=${encodeURI(keyword)}`)
         .then(res => res.json())
         .then(setFetchData)
         .catch(console.error);
   }, [keyword]);
 
   const onTextChange = (e) => {
-    setKeyword(e.target?.value || '');
+    const newKeyword = e.target?.value || '';
+    setKeyword(newKeyword);
+
+    if (localStorage) {
+      localStorage.setItem('keyword', newKeyword);
+    }
   };
 
   return (
     <>
-      <Form.Control id="search-box" type="text" placeholder="Find area for bikes" onChange={onTextChange} />
+      <Form.Control id="search-box" type="text" placeholder="Find area for bikes" onChange={onTextChange} value={keyword} />
       <ListGroup>
       { fetchData.map((data) => (
         <ListGroup.Item>
