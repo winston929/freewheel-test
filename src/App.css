@@ -1,0 +1,13 @@
+.table-head {
+  font-weight: 900;
+}
+
+.night-tube {
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+}
+
+.bad-service {
+  color:rgb(255, 0, 0);
+}
