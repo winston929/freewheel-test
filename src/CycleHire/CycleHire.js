@@ -5,7 +5,7 @@ const TubeStatus = () => {
   const [keyword, setKeyword] = useState('');
   const [fetchData, setFetchData] = useState([]);
   useEffect(() => {
-    const keywordStorage = localStorage && localStorage.getItem('keyword');
+    const keywordStorage = window.localStorage?.getItem('keyword');
     if (keywordStorage) setKeyword(keywordStorage);
     if (!keyword.length) return;
 
@@ -28,11 +28,12 @@ const TubeStatus = () => {
     <>
       <Form.Control id="search-box" type="text" placeholder="Find area for bikes" onChange={onTextChange} value={keyword} />
       <ListGroup>
-      { fetchData.map((data) => (
+      { fetchData.length > 0  ? (fetchData.map((data) => (
         <ListGroup.Item>
           { `${data.id.replace('BikePoints_', '')} ${data.commonName} (${data.lat}, ${data.lon})` }
         </ListGroup.Item>
-      )) }
+      ))) :
+      ( keyword.length > 0 ? `No bike points found for ${keyword}` : '') }
       </ListGroup>
     </>
   );
