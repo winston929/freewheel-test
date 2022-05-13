@@ -1,34 +1,52 @@
 import { useState, useEffect } from 'react';
 import { Form, ListGroup } from 'react-bootstrap';
 
-const TubeStatus = () => {
+const TubeStatus = ({
+  cycleHireData,
+  setCycleHireData
+}) => {
   const [keyword, setKeyword] = useState('');
-  const [fetchData, setFetchData] = useState([]);
+  const [fetchData, setFetchData] = useState(null);
+  const [noFetch, setNoFetch] = useState(false);
   useEffect(() => {
-    const keywordStorage = window.localStorage?.getItem('keyword');
-    if (keywordStorage) setKeyword(keywordStorage);
-    if (!keyword.length) return;
+    if (cycleHireData.keyword) {
+      setKeyword(cycleHireData.keyword);
+    }
 
+    if (cycleHireData.data) {
+      setFetchData(cycleHireData.data);
+      setNoFetch(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!keyword.length) return;
+    if (noFetch) {
+      setNoFetch(false);
+      return;
+    }
+    
     fetch(`https://api.tfl.gov.uk/BikePoint/Search?query=${encodeURI(keyword)}`)
-        .then(res => res.json())
-        .then(setFetchData)
-        .catch(console.error);
+      .then(res => res.json())
+      .then((data) => {
+        setFetchData(data);
+        setCycleHireData({
+          keyword, data
+        })
+      })
+      .catch(console.error);
   }, [keyword]);
 
   const onTextChange = (e) => {
     const newKeyword = e.target?.value || '';
     setKeyword(newKeyword);
-
-    if (localStorage) {
-      localStorage.setItem('keyword', newKeyword);
-    }
   };
 
   return (
     <>
       <Form.Control id="search-box" type="text" placeholder="Find area for bikes" onChange={onTextChange} value={keyword} />
       <ListGroup>
-      { fetchData.length > 0  ? (fetchData.map((data) => (
+      { (fetchData && fetchData.length > 0)  ? (fetchData.map((data) => (
         <ListGroup.Item>
           { `${data.id.replace('BikePoints_', '')} ${data.commonName} (${data.lat}, ${data.lon})` }
         </ListGroup.Item>

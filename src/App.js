@@ -8,6 +8,8 @@ import { useState } from 'react';
 const App = () => {
   const [isCycleHire, setIsCycleHire] = useState(false);
 
+  const [cycleHireData, setCycleHireData] = useState({});
+
   const onClickTubeStatus = () => setIsCycleHire(false);
   const onClickCycleHire = () => setIsCycleHire(true);
 
@@ -15,7 +17,13 @@ const App = () => {
     <div className="App">
       <Button className="menu-buttons" variant="primary" onClick={onClickTubeStatus}>Tube Status</Button>
       <Button className="menu-buttons" variant="primary" onClick={onClickCycleHire}>Cycle Hire</Button>
-      { isCycleHire ?  <CycleHire /> :  <TubeStatus /> }
+      { isCycleHire ?  
+        <CycleHire 
+          cycleHireData={cycleHireData} 
+          setCycleHireData={setCycleHireData} 
+        /> :  
+        <TubeStatus /> 
+      }
     </div>
   );
 }
